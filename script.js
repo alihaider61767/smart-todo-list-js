@@ -1,57 +1,49 @@
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #667eea, #764ba2);
-  display: flex;
-  justify-content: center;
-  margin-top: 80px;
-  color: white;
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-.container {
-  background: #ffffff;
-  color: black;
-  padding: 20px;
-  border-radius: 12px;
-  width: 350px;
+function renderTasks() {
+  const taskList = document.getElementById("taskList");
+  taskList.innerHTML = "";
+
+  tasks.forEach((task, index) => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <span onclick="toggleTask(${index})" class="${task.completed ? "completed" : ""}">
+        ${task.text}
+      </span>
+      <button onclick="deleteTask(${index})">❌</button>
+    `;
+
+    taskList.appendChild(li);
+  });
 }
 
-h1 {
-  text-align: center;
+function addTask() {
+  const input = document.getElementById("taskInput");
+  if (input.value.trim() === "") return;
+
+  tasks.push({ text: input.value, completed: false });
+  input.value = "";
+
+  saveTasks();
+  renderTasks();
 }
 
-.input-section {
-  display: flex;
-  gap: 10px;
+function toggleTask(index) {
+  tasks[index].completed = !tasks[index].completed;
+  saveTasks();
+  renderTasks();
 }
 
-input {
-  flex: 1;
-  padding: 8px;
+function deleteTask(index) {
+  tasks.splice(index, 1);
+  saveTasks();
+  renderTasks();
 }
 
-button {
-  padding: 8px 12px;
-  background: #667eea;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
+renderTasks();
 
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  background: #f2f2f2;
-  margin-top: 10px;
-  padding: 8px;
-  display: flex;
-  justify-content: space-between;
-  border-radius: 6px;
-}
-
-.completed {
-  text-decoration: line-through;
-  color: gray;
-}
